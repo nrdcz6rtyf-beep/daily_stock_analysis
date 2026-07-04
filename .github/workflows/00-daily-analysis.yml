@@ -531,6 +531,7 @@ jobs:
             echo "📜 最近日志（最后 30 行）:"
             tail -30 logs/stock_analysis_*.log 2>/dev/null || echo "无日志"
           fi
+
   send-report:
     needs: analyze
     runs-on: ubuntu-latest
@@ -548,15 +549,9 @@ jobs:
           server_port: 465
           username: ${{ secrets.EMAIL_USERNAME }}
           password: ${{ secrets.EMAIL_PASSWORD }}
-          subject: 📊 每日股票分析报告 - ${{ github.run_number }}
-          body: |
-            您好，
-            
-            今日分析报告已生成，请查收附件。
-            
-            运行记录：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          subject: 每日股票分析报告
+          body: 您好，今日分析报告已生成，请查收附件。
           to: 1162832035@qq.com
-          from: GitHub Actions <${{ secrets.EMAIL_USERNAME }}>
+          from: GitHub Actions
           attachments: ./report/**
           secure: true
-          convert_markdown: true
