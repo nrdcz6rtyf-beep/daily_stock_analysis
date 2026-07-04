@@ -531,3 +531,32 @@ jobs:
             echo "📜 最近日志（最后 30 行）:"
             tail -30 logs/stock_analysis_*.log 2>/dev/null || echo "无日志"
           fi
+  send-report:
+    needs: analyze
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download analysis report
+        uses: actions/download-artifact@v4
+        with:
+          name: analysis-reports-1
+          path: ./report
+
+      - name: Send report to email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: 📊 每日股票分析报告 - ${{ github.run_number }}
+          body: |
+            您好，
+            
+            今日分析报告已生成，请查收附件。
+            
+            运行记录：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          to: 1162832035@qq.com
+          from: GitHub Actions <${{ secrets.EMAIL_USERNAME }}>
+          attachments: ./report/**
+          secure: true
+          convert_markdown: true
